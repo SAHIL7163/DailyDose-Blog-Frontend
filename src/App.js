@@ -5,20 +5,16 @@ import PostPage from "./components/PostPage";
 import About from "./components/About";
 import Missing from "./components/Missing";
 import { format } from "date-fns";
-//import api from './api/posts';
 import axios from "./api/posts";
 import Register from "./components/Register";
 import Login from "./components/Login";
 
-import Travel from "./components/categories/Travel";
-import Tech from "./components/categories/Tech";
-import Finance from "./components/categories/Finance";
+import CategoryPage from "./components/categories/CategoryPage";
 
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Editpost from "./components/Editpost";
 import useWindowsize from "./hooks/useWindowsize";
-import useAxiosFetch from "./hooks/useAxiosFetch";
 import Unauthorized from "./components/Unauthorized";
 import RequireAuth from "./components/RequireAuth";
 import PersistLogin from "./components/PersistLogin";
@@ -27,7 +23,6 @@ import useAuth from "./hooks/useAuth";
 import useAxiosPrivate from "./hooks/useAxiosPrivate";
 import FormData from "form-data";
 
-const POSTS_URL = "./posts";
 
 const ROLES = {
   User: 2001,
@@ -35,7 +30,6 @@ const ROLES = {
   Admin: 5150,
 };
 
-//import set from 'date-fns/esm/set';
 function App() {
   const [posts, setPosts] = useState([]);
   const [search, setSearch] = useState("");
@@ -50,28 +44,20 @@ function App() {
   const { width } = useWindowsize();
   const [fetchError, setfetchError] = useState(false);
   const [isLoading, SetLoading] = useState(true);
-  // const {data,fetchError,isLoading}=useAxiosFetch('http://localhost:3500/posts');
 
   const axiosPrivate = useAxiosPrivate();
   const { auth } = useAuth();
   const refresh = useRefreshToken();
 
-  /*   useEffect(()=>
-  {
-    setPosts(data);
-  },[data]) */
   useEffect(() => {
-    console.log("Sahil");
-    console.log(auth);
     async function fetchData() {
       try {
-        console.log("auth");
         await refresh();
       } catch (err) {
         console.log("Error occurred during refresh:", err);
       }
     }
-    fetchData(); // Call the async function immediately
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -82,8 +68,6 @@ function App() {
       } catch (error) {
         if (error.response) {
           console.log(error.response.data);
-          console.log(error.response.status);
-          console.log(error.response.headers);
         } else {
           console.log(`Error: ${error.message}`);
         }
@@ -109,11 +93,7 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    //const id=posts.length ? posts[posts.length-1].id+1 : 1;
     const datetime = format(new Date(), "MMMM dd,yyyy pp");
-    const newpost = { title: posttitle, datetime, body: postBody };
-    console.log(image);
-    console.log(auth?.user);
     const formData = new FormData();
     formData.append("title", posttitle);
     formData.append("datetime", datetime);
@@ -121,17 +101,17 @@ function App() {
     formData.append("image", image);
     formData.append("categoryId", categoryId);
     formData.append("user", auth?.user.username);
-
-
-    console.log(formData);
-    formData.forEach((value, key) => {
-      console.log(key, value);
+    console.log("Submitting new post:", {
+      title: posttitle,
+      datetime,
+      body: postBody,
+      image,
+      categoryId,
+      user: auth?.user.username,
     });
 
     try {
       const response = await axiosPrivate.post("/posts", formData);
-      //JSON.stringify({title:posttitle,datetime,body:postBody}),{image});
-      console.log(JSON.stringify(response?.data));
       const allPosts = [...posts, response.data];
       setPosts(allPosts.sort((a, b) => b.datetime - a.datetime));
       setPosttitle("");
@@ -152,14 +132,8 @@ function App() {
     formData.append("image", image);
     formData.append("categoryId", categoryId);
 
-    //console.log(formData);
-    formData.forEach((value, key) => {
-      console.log(key, value);
-    });
-
     try {
       const response = await axiosPrivate.put(`/posts/${id}`, formData);
-      // JSON.stringify({title:edittitle,datetime,body:editpostbody}));
       const nonsortposts = posts.map((post) =>
         post._id === id ? { ...response.data } : post
       );
@@ -184,7 +158,6 @@ function App() {
     }
   };
 
-  /* posts.sort((a, b) => a.datetime.localeCompare(b.datetime)); */
 
   return (
     <Routes>
@@ -278,15 +251,8 @@ function App() {
           <Route index element ={<Stripe/> } />
         </Route>
  */}
-        <Route path="travel">
-          <Route index element={<Travel posts={searchResults} />} />
-        </Route>
-        <Route path="tech">
-          <Route index element={<Tech posts={searchResults} />} />
-        </Route>
-
-        <Route path="finance">
-          <Route index element={<Finance posts={searchResults} />} />
+        <Route path="category/:categoryId">
+          <Route index element={<CategoryPage posts={searchResults} />} />
         </Route>
 
         <Route path="unauthorized" element={<Unauthorized />} />
