@@ -23,7 +23,6 @@ import useAuth from "./hooks/useAuth";
 import useAxiosPrivate from "./hooks/useAxiosPrivate";
 import FormData from "form-data";
 
-
 const ROLES = {
   User: 2001,
   Editor: 1984,
@@ -158,7 +157,6 @@ function App() {
     }
   };
 
-
   return (
     <Routes>
       <Route
@@ -246,11 +244,7 @@ function App() {
         <Route path="Login">
           <Route index element={<Login />} />
         </Route>
-        {/* 
-        <Route path="payment" >
-          <Route index element ={<Stripe/> } />
-        </Route>
- */}
+
         <Route path="category/:categoryId">
           <Route index element={<CategoryPage posts={searchResults} />} />
         </Route>

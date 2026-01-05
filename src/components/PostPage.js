@@ -27,7 +27,7 @@ const PostPage = ({ posts, handleDelete }) => {
   const [isLoading, SetLoading] = useState(true);
   const [error, setError] = useState("");
   const [likes, setLikes] = useState(0);
-  const [hasLiked, setHasLiked] = useState(false); // Track if the user has liked
+  const [hasLiked, setHasLiked] = useState(false); 
   const [dislikes, setDislikes] = useState(0);
   const [hasDisliked, setHasDisliked] = useState(false);
   const [isCommentsVisible, setIsCommentsVisible] = useState(false);
@@ -65,14 +65,14 @@ const PostPage = ({ posts, handleDelete }) => {
     try {
       const response = await axios.put(`/posts/${id}/like`, {
         username: auth?.user.username,
-        action: "like", 
+        action: "like",
       });
       setLikes(response.data.likes);
       setDislikes(response.data.dislikes);
       setHasLiked(!hasLiked);
       setHasDisliked(false);
     } catch (err) {
-      console.error("Error details:", err); 
+      console.error("Error details:", err);
       const errorMessage =
         err.response?.data?.message ||
         "Unexpected error occurred while liking the post";
@@ -121,7 +121,7 @@ const PostPage = ({ posts, handleDelete }) => {
   };
 
   if (!postBody) {
-    return null; 
+    return null;
   }
   const paragraphs = postBody.split("\n");
 

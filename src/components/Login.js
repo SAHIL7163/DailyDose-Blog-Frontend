@@ -181,19 +181,6 @@ const Login = () => {
                       </div>
                     </div>
                   </div>
-                  {/* 
-                <div className='persistChech'>
-                    <input className='me-2'
-                    type ="checkbox" 
-                    id="persist"
-                    onChange={togglePersist}
-                    checked={persist}
-                 style={{ width: '25px', height: '25px' }}
-                    />
-                    <label htmlFor='persist'className=''>Trust This Device</label>
-
-                </div>
-     */}
                 </form>
               </section>
             )}

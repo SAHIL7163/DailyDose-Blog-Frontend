@@ -44,11 +44,7 @@ const Post = ({ post, postIndex }) => {
           <p className="postcategory">{categories[post.categoryId]}</p>
           <p>{truncatedText}</p>
           <div className="post-button">
-            <button
-              onClick={handleReadMoreClick}
-            >
-              Read More
-            </button>
+            <button onClick={handleReadMoreClick}>Read More</button>
           </div>
         </div>
 
