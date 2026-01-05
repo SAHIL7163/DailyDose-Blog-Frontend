@@ -170,7 +170,7 @@ const Login = () => {
                     <div className="input-group">
                       <div className="google-auth">
                         <a
-                          href="https://blogsite-api-mi38.onrender.com/auth/google"
+                          href={`${process.env.REACT_APP_BASE_URL}/auth/google`}
                           style={{ color: "white", textDecoration: "none" }}
                         >
                           <FcGoogle style={{ fontSize: "35px" }} />
