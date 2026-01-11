@@ -2,15 +2,13 @@ import { useRef, useState, useEffect } from "react";
 import useAuth from "../hooks/useAuth";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import useLocalStorege from "../hooks/useLocalStrorage";
-import { FaUser, FaLock, FaEye, FaEyeSlash, FaUnlockAlt } from "react-icons/fa";
-import img from "./../img/Screenshot (1113).png";
+import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import axios from "../api/posts";
 const LOGIN_URL = "/auth";
 
 const Login = () => {
   const { setAuth, persist, setPersist } = useAuth();
-
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
@@ -18,12 +16,9 @@ const Login = () => {
   const userRef = useRef();
   const errRef = useRef();
 
-  const [user, setUser] = useLocalStorege("user", " ");
+  const [user, setUser] = useLocalStorege("user", "");
   const [pwd, setPwd] = useState("");
   const [errMsg, setErrMsg] = useState("");
-
-  const [success, setSuccess] = useState(false);
-
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
@@ -36,7 +31,6 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const response = await axios.post(
         LOGIN_URL,
@@ -46,13 +40,11 @@ const Login = () => {
           withCredentials: true,
         }
       );
-
       const accessToken = response?.data?.accessToken;
       const roles = response?.data?.roles;
       setAuth({ user, pwd, accessToken, roles });
       setUser("");
       setPwd("");
-      setSuccess(true);
       navigate(from, { replace: true });
     } catch (err) {
       if (!err?.response) {
@@ -68,126 +60,78 @@ const Login = () => {
     }
   };
 
-  const togglePersist = () => {
-    setPersist((prev) => !prev);
-  };
-
-  useEffect(() => {
-    localStorage.setItem("persist", persist);
-  }, [persist]);
-
   return (
-    <main className="Login">
-      <div className="container">
-        <div className="row">
-          <div className="col-md left-div">
-            <div className="d-flex flex-column justify-content-center">
-              <div className="login-left">
-                <h2 className="text-center mt-5  ">New Here?</h2>
-                <p className="text-center fs-3">
-                  Sign up and See amazing Blogs
-                </p>
-                <p className="text-center fs-4">
-                  {" "}
-                  <span className="line text-dark">
-                    <Link to="/register">Sign Up</Link>
-                  </span>
-                </p>
-              </div>
-              <div className="login-img d-flex justify-content-center ">
-                <img src={img} className="" alt="" />
-              </div>
-            </div>
-          </div>
-          <div className="col-md">
-            {success ? (
-              <section>
-                <h1>Success!</h1>
-              </section>
-            ) : (
-              <section>
-                <p
-                  ref={errRef}
-                  className={errMsg ? "errmsg" : "offscreen"}
-                  aria-live="assertive"
-                >
-                  {errMsg}
-                </p>
-                <h1 className="text-center mb-4">Welcome back</h1>
-                <form className="login-form" onSubmit={handleSubmit}>
-                  <div className="mb-3">
-                    <label htmlFor="username" className="form-label fs-4">
-                      Username:
-                    </label>
-                    <div className="input-group">
-                      <span className="input-group-text">
-                        <FaUser />
-                      </span>
-                      <input
-                        type="text"
-                        id="username"
-                        className="form-control"
-                        ref={userRef}
-                        autoComplete="off"
-                        onChange={(e) => setUser(e.target.value)}
-                        value={user}
-                        required
-                      />
-                    </div>
-                  </div>
+    <div className="auth-container">
+      <h2 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>Welcome Back</h2>
 
-                  <div className="mb-3">
-                    <label htmlFor="password" className="form-label fs-4">
-                      Password:
-                    </label>
-                    <div className="input-group">
-                      <span className="input-group-text">
-                        <FaLock />
-                      </span>
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        id="password"
-                        className="form-control"
-                        onChange={(e) => setPwd(e.target.value)}
-                        value={pwd}
-                        required
-                      />
-                      <button
-                        className="btn bg-light text-dark"
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? <FaEye /> : <FaEyeSlash />}
-                      </button>
-                    </div>
-                  </div>
-                  <button className="sign-button btn-primary btn mb-3">
-                    Sign In
-                  </button>
-                  {/*   <h4 style={{textAlign:'center'}}>or</h4> */}
+      {errMsg && (
+        <p ref={errRef} className="statusMsg" style={{ color: "var(--error)", marginBottom: '1rem' }} aria-live="assertive">
+          {errMsg}
+        </p>
+      )}
 
-                  <div className="mb-3">
-                    <div className="input-group">
-                      <div className="google-auth">
-                        <a
-                          href={`${process.env.REACT_APP_BASE_URL}/auth/google`}
-                          style={{ color: "white", textDecoration: "none" }}
-                        >
-                          <FcGoogle style={{ fontSize: "35px" }} />
-                          <span style={{ paddingLeft: "10px" }}>
-                            Sign In with Google
-                          </span>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </form>
-              </section>
-            )}
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="username" className="form-label">Username</label>
+          <div style={{ position: 'relative' }}>
+            <input
+              type="text"
+              id="username"
+              ref={userRef}
+              autoComplete="off"
+              onChange={(e) => setUser(e.target.value)}
+              value={user}
+              required
+              className="form-input"
+              style={{ paddingLeft: '2.5rem' }}
+            />
+            <FaUser style={{ position: 'absolute', top: '50%', left: '0.75rem', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
           </div>
         </div>
-      </div>
-    </main>
+
+        <div className="form-group">
+          <label htmlFor="password" className="form-label">Password</label>
+          <div style={{ position: 'relative' }}>
+            <input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              onChange={(e) => setPwd(e.target.value)}
+              value={pwd}
+              required
+              className="form-input"
+              style={{ paddingLeft: '2.5rem' }}
+            />
+            <FaLock style={{ position: 'absolute', top: '50%', left: '0.75rem', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{ position: 'absolute', top: '50%', right: '0.75rem', transform: 'translateY(-50%)', background: 'none', color: 'var(--text-muted)' }}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
+        </div>
+
+        <button className="btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
+          Sign In
+        </button>
+
+        <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+          <p style={{ color: 'var(--text-muted)' }}>New Here? <Link to="/register" style={{ color: 'var(--accent-primary)' }}>Sign Up</Link></p>
+        </div>
+
+        <div style={{ marginTop: '1.5rem', borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem' }}>
+          <a
+            href={`${process.env.REACT_APP_BASE_URL}/auth/google`}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', textDecoration: "none", color: 'var(--text-primary)', border: '1px solid var(--border-color)', padding: '0.75rem', borderRadius: 'var(--border-radius)' }}
+          >
+            <FcGoogle size={24} />
+            <span>Sign In with Google</span>
+          </a>
+        </div>
+
+      </form>
+    </div>
   );
 };
 

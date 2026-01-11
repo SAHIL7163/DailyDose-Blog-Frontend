@@ -55,136 +55,100 @@ const Editpost = ({
   const onCategorychanged = (e) => SetcategoryId(e.target.value);
 
   return (
-    <main className="NewPost">
-      {(edittitle || editpostbody || image) && (
+    <div className="container" style={{ maxWidth: '800px', marginTop: 'calc(var(--header-height) + 2rem)' }}>
+      {post ? (
         <>
-          <div className="d-flex justify-content-between gap-4">
-            <div>
-              {/* <label htmlFor="fileInput" className="upload-box form-label fs-4">
-                {preview ? (
-                  <img
-                    src={post.imageUrl}
-                    alt="Preview"
-                    className="upload-preview"
-                  />
-                ) : (
-                  <div>
-                    <i className="bi bi-cloud-upload fs-1"></i>
-                    <p className="mb-1">Drag & Drop / Upload Image</p>
-                  </div>
-                )}
-              </label> */}
+          <h2 style={{ marginBottom: '2rem' }}>Edit Post</h2>
+          <div className="new-post-card" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
 
-              <label htmlFor="fileInput" className="upload-box form-label fs-4">
-                {preview ? (
-                  /* New image selected */
-                  <img src={preview} alt="Preview" className="upload-preview" />
-                ) : post?.imageUrl ? (
-                  /* Existing image from backend */
-                  <img
-                    src={post.imageUrl}
-                    alt="Existing"
-                    className="upload-preview"
-                  />
-                ) : (
-                  /* No image */
-                  <div>
-                    <i className="bi bi-cloud-upload fs-1"></i>
-                    <p className="mb-1">Drag & Drop / Upload Image</p>
-                  </div>
-                )}
-              </label>
-
-              <input
-                id="fileInput"
-                type="file"
-                required
-                hidden
-                onChange={handleFileChange}
-              />
-
-              <p className="file-name">
-                {filename ? `Selected: ${filename}` : "No file selected"}
-              </p>
-            </div>
-
-            <div className="newPostForm mt-4 flex-grow-1">
-              <div>
-                <label className="form-label fs-4">Title</label>
+            {/* Title and Category */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="form-group">
+                <label className="form-label">Title</label>
                 <input
                   type="text"
-                  className="form-control"
-                  placeholder="Blog title goes here..."
+                  className="form-input"
+                  placeholder="Post title"
                   value={edittitle}
                   onChange={(e) => setedittitle(e.target.value)}
                   required
                 />
               </div>
-              <div>
-                <label className="form-label fs-4">Category</label>
+              <div className="form-group">
+                <label className="form-label">Category</label>
                 <select
-                  id="category"
                   value={categoryId}
                   onChange={onCategorychanged}
-                  className="form-select"
-                  style={{ height: "2rem" }}
+                  className="form-input"
+                  style={{ appearance: 'none' }}
                 >
-                  <option value="">{categories[categoryId]}</option>
-                  {usersOptions
-                    .filter((option) => option.props.value !== post.categoryId)
-                    .map((filteredOption) => (
-                      <option
-                        key={filteredOption.props.value}
-                        value={filteredOption.props.value}
-                      >
-                        {filteredOption.props.children}
-                      </option>
-                    ))}
+                  {/* Handle legacy categoryId correctly if needed, or simple mapping */}
+                  {categories.map((cat, idx) => (
+                    <option key={idx} value={idx}>{cat}</option>
+                  ))}
                 </select>
               </div>
-              <div className="mt-4">
-                <AiSuggestionForm
-                  posttitle={edittitle}
-                  postBody={editpostbody}
-                  setPosttitle={setedittitle}
-                  setPostBody={seteditpostbody}
-                  SetcategoryId={SetcategoryId}
-                  Image={image}
-                />
-              </div>
             </div>
+
+            {/* Image Upload */}
+            <div className="form-group">
+              <label htmlFor="fileInput" className="form-label" style={{ cursor: 'pointer', border: '2px dashed var(--border-color)', borderRadius: 'var(--border-radius)', padding: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-secondary)', transition: 'all 0.3s' }}>
+                {preview ? (
+                  <img src={preview} alt="Preview" style={{ maxHeight: '350px', maxWidth: '100%', objectFit: 'cover', borderRadius: 'var(--border-radius)' }} />
+                ) : post.imageUrl ? (
+                  <img src={post.imageUrl} alt="Current" style={{ maxHeight: '350px', maxWidth: '100%', objectFit: 'cover', borderRadius: 'var(--border-radius)' }} />
+                ) : (
+                  <div style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
+                    <i className="bi bi-cloud-upload fs-1"></i>
+                    <p className="mb-0 mt-2">Click to Upload New Image</p>
+                  </div>
+                )}
+              </label>
+              <input
+                id="fileInput"
+                type="file"
+                hidden
+                onChange={handleFileChange}
+              />
+              {filename && <p style={{ marginTop: '0.5rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>Selected: {filename}</p>}
+            </div>
+
+            {/* AI Suggestions */}
+            <div style={{ marginBottom: '1rem' }}>
+              <AiSuggestionForm
+                posttitle={edittitle}
+                postBody={editpostbody}
+                setPosttitle={setedittitle}
+                setPostBody={seteditpostbody}
+                SetcategoryId={SetcategoryId}
+                Image={image}
+              />
+            </div>
+
+            {/* Editor */}
+            <form onSubmit={(e) => e.preventDefault()}>
+              <div style={{ marginBottom: '2rem', border: '1px solid var(--border-color)', borderRadius: 'var(--border-radius)', overflow: 'hidden' }}>
+                <Editor value={editpostbody} onChange={seteditpostbody} />
+              </div>
+
+              <button
+                type="submit"
+                onClick={() => handleEdit(post._id)}
+                className="btn-primary"
+                style={{ width: '100%', fontSize: '1.2rem' }}
+              >
+                Update Post
+              </button>
+            </form>
           </div>
-
-          <form className="newPostForm" onSubmit={(e) => e.preventDefault()}>
-            <Editor value={editpostbody} onChange={seteditpostbody} />
-
-            <button
-              type="submit"
-              onClick={(e) => handleEdit(post._id)}
-              style={{
-                backgroundColor: "#007bff",
-                color: "white",
-                border: "none",
-                padding: "10px 20px",
-                borderRadius: "5px",
-                width: "100%",
-              }}
-            >
-              Submit
-            </button>
-          </form>
         </>
-      )}
-      {!post && (
-        <>
+      ) : (
+        <div className="text-center py-5">
           <h2>Post Not Found</h2>
-          <p>Well, that's disappointing.</p>
-          <p>
-            <Link to="/">Visit Our Homepage</Link>
-          </p>
-        </>
+          <Link to="/" className="btn btn-primary mt-3">Return Home</Link>
+        </div>
       )}
-    </main>
+    </div>
   );
 };
 

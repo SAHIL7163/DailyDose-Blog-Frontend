@@ -1,15 +1,14 @@
 import React from "react";
 
-const Footer = ({ fetchError }) => {
+const Footer = () => {
   const today = new Date();
 
   return (
-    <>
-      <p style={{ color: "white" }}>{fetchError}</p>
-      <footer className="Footer bg-dark text-light">
-        <p>Copyright &copy; {today.getFullYear()}</p>
-      </footer>
-    </>
+    <footer className="footer">
+      <div className="container">
+        <p>Copyright &copy; {today.getFullYear()} DailyDose Blog. All rights reserved.</p>
+      </div>
+    </footer>
   );
 };
 
