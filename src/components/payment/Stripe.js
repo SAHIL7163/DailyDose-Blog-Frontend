@@ -1,12 +1,11 @@
 import { useState } from "react";
 import StripeCheckout from "react-stripe-checkout";
-import img from "./../../img/cashless-payment_4108843.png";
 import axios from "./../../api/posts";
 import useAuth from "../../hooks/useAuth";
 
 const Stripe = () => {
   const { auth } = useAuth();
- const [product, setProduct] = useState({
+  const [product, setProduct] = useState({
     name: "React",
     price: 10,
     productby: "facebook",
@@ -43,7 +42,6 @@ const Stripe = () => {
           <h3 style={{ textAlign: "center" }}>Pay & get Subsrciption</h3>
           <div className="d-flex align-items-center justify-content-center">
             <button className="d-flex align-items-center justify-content-center">
-              <img src={img} width="80px" />
               <h4>10$</h4>
             </button>
           </div>

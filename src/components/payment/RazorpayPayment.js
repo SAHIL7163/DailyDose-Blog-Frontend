@@ -1,5 +1,4 @@
 import { useState } from "react";
-import img from "./../../img/cashless-payment_4108843.png";
 import axios from "../../api/posts";
 import useAuth from "../../hooks/useAuth";
 import { FaCreditCard } from "react-icons/fa";
@@ -23,7 +22,6 @@ const RazorpayPayment = () => {
         currency: "INR",
         name: "DailyDose Blog",
         description: "Premium Blog Subscription",
-        image: img,
         order_id: data.id,
         handler: async function (response) {
           const verifyRes = await axios.post("/payment/verify", {
