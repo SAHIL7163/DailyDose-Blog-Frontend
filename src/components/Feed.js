@@ -1,12 +1,13 @@
 import React from "react";
 import Post from "./Post";
+
 const Feed = ({ posts }) => {
   return (
-    <main className="Feed">
+    <div className="post-grid">
       {posts.map((post, index) => (
-        <Post key={post.id} post={post} postIndex={index} />
+        <Post key={post.id} post={post} />
       ))}
-    </main>
+    </div>
   );
 };
 

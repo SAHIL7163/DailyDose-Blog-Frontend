@@ -56,15 +56,14 @@ const RazorpayPayment = () => {
   };
 
   return (
-    <div className="d-flex flex-column align-items-center">
-      <h1>Pay & get Subscription</h1>
-
-      <div className="mt-4">
+    <div className="w-100 d-flex justify-content-center">
+      <div className="mt-2 w-100" style={{ maxWidth: '320px' }}>
         <button
           onClick={handlePayment}
           style={{
             ...styles.gradientButton,
-            transform: isHovered ? "scale(1.05)" : "scale(1)",
+            transform: isHovered ? "scale(1.02)" : "scale(1)",
+            boxShadow: isHovered ? "0 15px 30px rgba(99, 102, 241, 0.4)" : "0 10px 20px rgba(99, 102, 241, 0.2)"
           }}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
@@ -72,7 +71,7 @@ const RazorpayPayment = () => {
           <div style={styles.cardIconWrapper}>
             <FaCreditCard color="white" size={20} />
           </div>
-          <span>Subscribe via Razorpay</span>
+          <span>Subscribe Now</span>
         </button>
       </div>
     </div>
@@ -81,22 +80,21 @@ const RazorpayPayment = () => {
 
 const styles = {
   gradientButton: {
-    background: "linear-gradient(90deg, #3b82f6 0%, #06b6d4 100%)", // Blue to Cyan
+    background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)", // Indigo to Violet
     border: "none",
-    padding: "14px 40px",
-    borderRadius: "50px",
+    padding: "16px 32px",
+    borderRadius: "16px",
     color: "white",
     fontSize: "1.1rem",
-    fontWeight: "bold",
+    fontWeight: "600",
     cursor: "pointer",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     gap: "12px",
-    boxShadow: "0 10px 20px rgba(6, 182, 212, 0.3)",
-    transition: "transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+    boxShadow: "0 10px 20px rgba(99, 102, 241, 0.3)",
+    transition: "all 0.3s ease",
     width: "100%",
-    maxWidth: "320px",
   },
   cardIconWrapper: {
     display: "flex",

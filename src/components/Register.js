@@ -1,21 +1,14 @@
 import { useRef, useState, useEffect } from "react";
-import {
-  faCheck,
-  faTimes,
-  faInfoCircle,
-} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { FaUser, FaLock, FaEye, FaEyeSlash, FaUnlockAlt } from "react-icons/fa";
+import { faCheck, faTimes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import { MdOutlineAlternateEmail } from "react-icons/md";
-
 import axios from "../api/posts";
 import { Link, useNavigate } from "react-router-dom";
-import img from "./../img/Screenshot (1110).png";
 
 const USER_REGEX = /^[A-Z][A-z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 const EMAIL_REGEX = /^[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*@gmail\.com$/;
-
 const REGISTER_URL = "/register";
 
 const Register = () => {
@@ -40,304 +33,179 @@ const Register = () => {
   const [emailfocus, setemailFocus] = useState(false);
 
   const [errMsg, setErrMsg] = useState("");
-
   const [showPassword, setShowPassword] = useState(false);
 
-  useEffect(() => {
-    userRef.current.focus();
-  }, []);
-
-  useEffect(() => {
-    setValidName(USER_REGEX.test(user));
-  }, [user]);
-
-  useEffect(() => {
-    setvalidEmail(EMAIL_REGEX.test(email));
-  }, [email]);
-
-  useEffect(() => {
-    setValidPwd(PWD_REGEX.test(pwd));
-    setValidMatch(pwd === matchPwd);
-  }, [pwd, matchPwd]);
-
-  useEffect(() => {
-    setErrMsg("");
-  }, [user, pwd, matchPwd, email]);
+  useEffect(() => { userRef.current.focus(); }, []);
+  useEffect(() => { setValidName(USER_REGEX.test(user)); }, [user]);
+  useEffect(() => { setvalidEmail(EMAIL_REGEX.test(email)); }, [email]);
+  useEffect(() => { setValidPwd(PWD_REGEX.test(pwd)); setValidMatch(pwd === matchPwd); }, [pwd, matchPwd]);
+  useEffect(() => { setErrMsg(""); }, [user, pwd, matchPwd, email]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // if button enabled with JS hack
-    const v1 = USER_REGEX.test(user);
-    const v2 = PWD_REGEX.test(pwd);
-    if (!v1 || !v2) {
+    if (!USER_REGEX.test(user) || !PWD_REGEX.test(pwd)) {
       setErrMsg("Invalid Entry");
       return;
     }
-
     try {
-      const response = await axios.post(
-        REGISTER_URL,
-        JSON.stringify({ user, pwd, email }),
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
-      );
-
-      setUser("");
-      setPwd("");
-      setMatchPwd("");
-      setEmail("");
+      await axios.post(REGISTER_URL, JSON.stringify({ user, pwd, email }), {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      });
+      setUser(""); setPwd(""); setMatchPwd(""); setEmail("");
       navigate("/login");
     } catch (err) {
-      if (!err?.response) {
-        setErrMsg("No Server Response");
-      } else if (err.response?.status === 409) {
-        setErrMsg("Username Taken");
-      } else {
-        setErrMsg("Registration Failed");
-      }
+      if (!err?.response) setErrMsg("No Server Response");
+      else if (err.response?.status === 409) setErrMsg("Username Taken");
+      else setErrMsg("Registration Failed");
       errRef.current.focus();
     }
   };
 
   return (
-    <main className="Register">
-      <h1 className="text-center mb-1">Let's Join with us</h1>
-      <p className="text-center mb-sm-5 fs-5">
-        create an account to join the community
-      </p>
-      <div style={{ display: "flex" }}>
-        <div className="register-img ">
-          <img src={img} alt=""></img>
+    <div className="auth-container">
+      <h2 style={{ textAlign: 'center', marginBottom: '1rem' }}>Join Us</h2>
+      <p style={{ textAlign: 'center', color: 'var(--text-muted)', marginBottom: '2rem' }}>Create an account to join the community</p>
+
+      {errMsg && <p ref={errRef} className="statusMsg" style={{ color: "var(--error)" }} aria-live="assertive">{errMsg}</p>}
+
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label className="form-label">Username:</label>
+          <div style={{ position: 'relative' }}>
+            <input
+              type="text"
+              id="username"
+              ref={userRef}
+              autoComplete="off"
+              onChange={(e) => setUser(e.target.value)}
+              value={user}
+              required
+              className="form-input"
+              onFocus={() => setUserFocus(true)}
+              onBlur={() => setUserFocus(false)}
+              style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem' }}
+            />
+            <FaUser style={{ position: 'absolute', top: '50%', left: '0.75rem', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+
+            {user && (
+              <div style={{ position: 'absolute', top: '50%', right: '0.75rem', transform: 'translateY(-50%)' }}>
+                <FontAwesomeIcon icon={validName ? faCheck : faTimes} className={validName ? "valid" : "invalid"} />
+              </div>
+            )}
+          </div>
+          {userFocus && user && !validName && (
+            <p className="instructions" style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+              <FontAwesomeIcon icon={faInfoCircle} /> 4 to 24 chars. Must begin with a letter.
+            </p>
+          )}
         </div>
-        <div className="col-md">
-          <section>
-            <p
-              ref={errRef}
-              className={errMsg ? "errmsg" : "offscreen"}
-              aria-live="assertive"
+
+        <div className="form-group">
+          <label className="form-label">Email:</label>
+          <div style={{ position: 'relative' }}>
+            <input
+              type="text"
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
+              required
+              className="form-input"
+              onFocus={() => setemailFocus(true)}
+              onBlur={() => setemailFocus(false)}
+              style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem' }}
+            />
+            <MdOutlineAlternateEmail style={{ position: 'absolute', top: '50%', left: '0.75rem', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+
+            {email && (
+              <div style={{ position: 'absolute', top: '50%', right: '0.75rem', transform: 'translateY(-50%)' }}>
+                <FontAwesomeIcon icon={validemail ? faCheck : faTimes} className={validemail ? "valid" : "invalid"} />
+              </div>
+            )}
+          </div>
+          {emailfocus && !validemail && (
+            <p className="instructions" style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+              <FontAwesomeIcon icon={faInfoCircle} /> Must be a valid Gmail address.
+            </p>
+          )}
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Password:</label>
+          <div style={{ position: 'relative' }}>
+            <input
+              type={showPassword ? "text" : "password"}
+              onChange={(e) => setPwd(e.target.value)}
+              value={pwd}
+              required
+              className="form-input"
+              onFocus={() => setPwdFocus(true)}
+              onBlur={() => setPwdFocus(false)}
+              style={{ paddingLeft: '2.5rem', paddingRight: '4.5rem' }}
+            />
+            <FaLock style={{ position: 'absolute', top: '50%', left: '0.75rem', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+
+            {pwd && (
+              <div style={{ position: 'absolute', top: '50%', right: '2.5rem', transform: 'translateY(-50%)' }}>
+                <FontAwesomeIcon icon={validPwd ? faCheck : faTimes} className={validPwd ? "valid" : "invalid"} />
+              </div>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{ position: 'absolute', top: '50%', right: '0.75rem', transform: 'translateY(-50%)', background: 'none', color: 'var(--text-muted)' }}
             >
-              {errMsg}
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
+          {pwdFocus && !validPwd && (
+            <p className="instructions" style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+              <FontAwesomeIcon icon={faInfoCircle} /> 8-24 chars. Must include uppercase, lowercase, number, special char.
             </p>
-
-            <form className="Register-form" onSubmit={handleSubmit}>
-              <div className="mb-2">
-                <label htmlFor="username" className="form-label fs-4">
-                  Username:
-                  <FontAwesomeIcon
-                    icon={faCheck}
-                    className={validName ? "valid" : "hide"}
-                  />
-                  <FontAwesomeIcon
-                    icon={faTimes}
-                    className={validName || !user ? "hide" : "invalid"}
-                  />
-                </label>
-                <div className="input-group">
-                  <span className="input-group-text">
-                    <FaUser />
-                  </span>
-                  <input
-                    type="text"
-                    id="username"
-                    autoComplete="off"
-                    className="form-control"
-                    placeholder="e.g. Sahil"
-                    ref={userRef}
-                    onChange={(e) => setUser(e.target.value)}
-                    value={user}
-                    required
-                    aria-invalid={validName ? "false" : "true"}
-                    aria-describedby="uidnote"
-                    onFocus={() => setUserFocus(true)}
-                    onBlur={() => setUserFocus(false)}
-                  />
-                </div>
-                <p
-                  id="uidnote"
-                  className={
-                    userFocus && user && !validName
-                      ? "instructions"
-                      : "offscreen"
-                  }
-                >
-                  <FontAwesomeIcon icon={faInfoCircle} />
-                  4 to 24 characters.
-                  <br />
-                  Must begin with a letter.
-                  <br />
-                  Letters, numbers, underscores, hyphens allowed.
-                </p>
-              </div>
-
-              <div className="mb-2">
-                <label htmlFor="password" className="form-label fs-4">
-                  Password:
-                  <FontAwesomeIcon
-                    icon={faCheck}
-                    className={validPwd ? "valid" : "hide"}
-                  />
-                  <FontAwesomeIcon
-                    icon={faTimes}
-                    className={validPwd || !pwd ? "hide" : "invalid"}
-                  />
-                </label>
-                <div className="input-group">
-                  <span className="input-group-text">
-                    <FaUnlockAlt />
-                  </span>
-                  <input
-                    type="password"
-                    className="form-control"
-                    placeholder="e.g. Sahil@12"
-                    id="password"
-                    onChange={(e) => setPwd(e.target.value)}
-                    value={pwd}
-                    required
-                    aria-invalid={validPwd ? "false" : "true"}
-                    aria-describedby="pwdnote"
-                    onFocus={() => setPwdFocus(true)}
-                    onBlur={() => setPwdFocus(false)}
-                  />
-                </div>
-                <p
-                  id="pwdnote"
-                  className={
-                    pwdFocus && !validPwd ? "instructions" : "offscreen"
-                  }
-                >
-                  <FontAwesomeIcon icon={faInfoCircle} />
-                  8 to 24 characters.
-                  <br />
-                  Must include uppercase and lowercase letters, a number and a
-                  special character.
-                  <br />
-                  Allowed special characters:{" "}
-                  <span aria-label="exclamation mark">!</span>{" "}
-                  <span aria-label="at symbol">@</span>{" "}
-                  <span aria-label="hashtag">#</span>{" "}
-                  <span aria-label="dollar sign">$</span>{" "}
-                  <span aria-label="percent">%</span>
-                </p>
-              </div>
-
-              <div className="mb-2">
-                <label htmlFor="confirm_pwd" className="form-label fs-4">
-                  Confirm Password:
-                  <FontAwesomeIcon
-                    icon={faCheck}
-                    className={validMatch && matchPwd ? "valid" : "hide"}
-                  />
-                  <FontAwesomeIcon
-                    icon={faTimes}
-                    className={validMatch || !matchPwd ? "hide" : "invalid"}
-                  />
-                </label>
-
-                <div className="input-group">
-                  <span className="input-group-text">
-                    <FaLock />
-                  </span>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    className="form-control"
-                    placeholder="e.g. Sahil@12"
-                    id="confirm_pwd"
-                    onChange={(e) => setMatchPwd(e.target.value)}
-                    value={matchPwd}
-                    required
-                    aria-invalid={validMatch ? "false" : "true"}
-                    aria-describedby="confirmnote"
-                    onFocus={() => setMatchFocus(true)}
-                    onBlur={() => setMatchFocus(false)}
-                  />
-                  <button
-                    className="btn bg-light text-dark"
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <FaEye /> : <FaEyeSlash />}
-                  </button>
-                </div>
-                <p
-                  id="confirmnote"
-                  className={
-                    matchFocus && !validMatch ? "instructions" : "offscreen"
-                  }
-                >
-                  <FontAwesomeIcon icon={faInfoCircle} />
-                  Must match the first password input field.
-                </p>
-              </div>
-
-              <div className="mb-2">
-                <label htmlFor="email" className="form-label fs-4">
-                  Email id:
-                  <FontAwesomeIcon
-                    icon={faCheck}
-                    className={validemail ? "valid" : "hide"}
-                  />
-                  <FontAwesomeIcon
-                    icon={faTimes}
-                    className={validemail || !email ? "hide" : "invalid"}
-                  />
-                </label>
-
-                <div className="input-group">
-                  <span className="input-group-text">
-                    <MdOutlineAlternateEmail />
-                  </span>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="e.g. Sahil12@gmail.com"
-                    id="email"
-                    onChange={(e) => setEmail(e.target.value)}
-                    value={email}
-                    required
-                    aria-invalid={validMatch ? "false" : "true"}
-                    aria-describedby="confirmnote"
-                    onFocus={() => setemailFocus(true)}
-                    onBlur={() => setemailFocus(false)}
-                  />
-                </div>
-                <p
-                  id="confirmnote"
-                  className={
-                    emailfocus && !validemail ? "instructions" : "offscreen"
-                  }
-                >
-                  <FontAwesomeIcon icon={faInfoCircle} />
-                  Must match the email-id syntax input field.
-                </p>
-              </div>
-
-              <button
-                className={`btn btn-primary ${
-                  !validName || !validPwd || !validMatch || !validemail
-                    ? "disabled"
-                    : ""
-                }`}
-                type="submit"
-                disabled={!validName || !validPwd || !validMatch || !validemail}
-              >
-                Sign Up
-              </button>
-            </form>
-            <p className="fs-4">
-              Already registered?
-              <spn className="line ">
-                {/*put router link here*/}
-                <Link to="/login">
-                  <p className=""> Sign In</p>
-                </Link>
-              </spn>
-            </p>
-          </section>
+          )}
         </div>
-      </div>
-    </main>
+
+        <div className="form-group">
+          <label className="form-label">Confirm Password:</label>
+          <div style={{ position: 'relative' }}>
+            <input
+              type={showPassword ? "text" : "password"}
+              onChange={(e) => setMatchPwd(e.target.value)}
+              value={matchPwd}
+              required
+              className="form-input"
+              onFocus={() => setMatchFocus(true)}
+              onBlur={() => setMatchFocus(false)}
+              style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem' }}
+            />
+            <FaLock style={{ position: 'absolute', top: '50%', left: '0.75rem', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+
+            {matchPwd && (
+              <div style={{ position: 'absolute', top: '50%', right: '0.75rem', transform: 'translateY(-50%)' }}>
+                <FontAwesomeIcon icon={validMatch ? faCheck : faTimes} className={validMatch ? "valid" : "invalid"} />
+              </div>
+            )}
+          </div>
+          {matchFocus && !validMatch && (
+            <p className="instructions" style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+              <FontAwesomeIcon icon={faInfoCircle} /> Passwords must match.
+            </p>
+          )}
+        </div>
+
+        <button
+          className="btn-primary"
+          style={{ width: '100%', marginTop: '1rem', opacity: (!validName || !validPwd || !validMatch || !validemail) ? 0.5 : 1 }}
+          disabled={!validName || !validPwd || !validMatch || !validemail}
+        >
+          Sign Up
+        </button>
+
+        <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+          <p style={{ color: 'var(--text-muted)' }}>Already registered? <Link to="/login" style={{ color: 'var(--accent-primary)' }}>Sign In</Link></p>
+        </div>
+      </form>
+    </div>
   );
 };
 

@@ -1,41 +1,42 @@
 import React from "react";
 import Feed from "./Feed";
 import Category from "./categories/Category";
+import LoadingSkeleton from "./LoadingSkeleton";
 
 const Home = ({ posts, fetchError, isLoading }) => {
   return (
-    <main className="Home d-flex flex-column ">
+    <main className="Home container">
+
+      {/* CATEGORIES - RESTORED */}
       <Category />
-      {isLoading && (
-        <div
-          className="statusMsg"
-          style={{ margin: "5rem", minHeight: "50px" }}
-        >
-          Loading posts...
-        </div>
-      )}
-      {fetchError && (
-        <p
-          className="statusMsg"
-          style={{
-            color: "red",
-          }}
-        >
-          {fetchError}
-        </p>
-      )}
-      {!isLoading &&
-        !fetchError &&
-        (posts.length ? (
-          <Feed posts={posts} />
-        ) : (
-          <div
-            className="statusMsg"
-            style={{ margin: "5rem", minHeight: "50px" }}
-          >
-            No Posts to Display
+
+      {/* FEED */}
+      <div id="posts-grid">
+        {isLoading && (
+          <div className="post-grid">
+            <LoadingSkeleton type="post" />
+            <LoadingSkeleton type="post" />
+            <LoadingSkeleton type="post" />
           </div>
-        ))}
+        )}
+
+        {fetchError && (
+          <div className="text-center py-5">
+            <p className="text-danger fs-5">{fetchError}</p>
+          </div>
+        )}
+
+        {!isLoading && !fetchError && (
+          posts.length ? (
+            <Feed posts={posts} />
+          ) : (
+            <div className="text-center py-5 bg-surface-alt rounded-3 border border-dashed">
+              <h3 className="text-muted mb-2">No articles found</h3>
+              <p className="text-muted">Check back later for new content.</p>
+            </div>
+          )
+        )}
+      </div>
     </main>
   );
 };
