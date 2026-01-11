@@ -8,7 +8,7 @@ import axios from "../api/posts";
 const LOGIN_URL = "/auth";
 
 const Login = () => {
-  const { setAuth, persist, setPersist } = useAuth();
+  const { setAuth } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
@@ -122,7 +122,7 @@ const Login = () => {
 
         <div style={{ marginTop: '1.5rem', borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem' }}>
           <a
-            href={`${process.env.REACT_APP_BASE_URL}/auth/google`}
+            href={`${process.env.REACT_APP_BASE_URL}/auth/google?prevUrl=${encodeURIComponent(window.location.origin + from)}`}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', textDecoration: "none", color: 'var(--text-primary)', border: '1px solid var(--border-color)', padding: '0.75rem', borderRadius: 'var(--border-radius)' }}
           >
             <FcGoogle size={24} />
